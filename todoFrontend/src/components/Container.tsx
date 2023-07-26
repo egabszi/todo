@@ -42,13 +42,15 @@ const Container = () => {
 
   const handleDelete = (index: number) => {
     const newTodoList = [...todoList];
-    //const newCheckedItems = [...isChecked];
-
-    newTodoList.splice(index, 1);
-    //newCheckedItems.splice(index, 1);
-
-    //setTodoList(newTodoList);
-    //setIsChecked(newCheckedItems);
+    fetch(`http://localhost:3000/todos/${newTodoList[index].id}`, {
+      method: "DELETE"
+    }).then(async(response) => {
+      if(!response.ok) {
+        throw new Error(response.statusText)
+      }
+      newTodoList.splice(index, 1);
+      setTodoList(newTodoList);
+    })
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,26 +59,21 @@ const Container = () => {
   
   const handleAdd = () => {
     if (task) {
-      const newItem = {
-        id: todoList.length + 1 ,
+      const newItem: TodoItem = {
+        id: null as unknown as number,
         title: task,
         isCompleted: false
       }
-      //const newTaskList = todoList ? [...todoList, task] : [task];
-      //setTodoList(newTaskList);
-      fetch(`http://localhost:3000/todos/${newItem.id}`, {
-        method: "POST",
-        body: JSON.stringify(
-          newItem
-        )
+      fetch(`http://localhost:3000/todos`, {
+        method: "PUT",
+        body: JSON.stringify(newItem)
       }).then(async(response) => {
         if(!response.ok) {
           throw new Error(response.statusText)
         }
         const updatedTodoList = await response.json();
-        todoList.push(updatedTodoList)
+        setTodoList(updatedTodoList);
         setTask("");
-        console.log(todoList)
       })
     } else {
       alert("Please enter a task");

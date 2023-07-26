@@ -29,6 +29,29 @@ fastify.post('/todos/:id', (request, reply) => __awaiter(void 0, void 0, void 0,
     todoList[todoIndex] = JSON.parse(request.body);
     return todoList[todoIndex];
 }));
+fastify.put('/todos', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    // itt generalj uj IDt
+    const largestId = todoList.reduce((max, todoItem) => {
+        if (todoItem.id > max) {
+            return todoItem.id;
+        }
+        return max;
+    }, 0);
+    const todoItemNewIndex = largestId + 1;
+    const newtodoItem = JSON.parse(request.body);
+    // bovitsd a listat
+    todoList.push(Object.assign(Object.assign({}, newtodoItem), { id: todoItemNewIndex }));
+    // csak az uj elemet add vissza
+    return todoList;
+}));
+fastify.delete('/todos/:id', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    const todoIndex = todoList.findIndex((todo) => {
+        const { id } = request.params;
+        return todo.id == id;
+    });
+    todoList.splice(todoIndex, 1);
+    return todoList;
+}));
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield fastify.listen({ port: 3000 });

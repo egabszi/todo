@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import { todo } from 'node:test'
 
 const fastify = Fastify({
     logger: true
@@ -20,6 +21,34 @@ fastify.post('/todos/:id', async (request, reply) => {
     })
     todoList[todoIndex] = JSON.parse(request.body as string) as TodoItem
     return todoList[todoIndex]
+})
+
+fastify.put('/todos', async (request, reply) => {
+    // itt generalj uj IDt
+    const largestId = todoList.reduce((max, todoItem) => {
+        if (todoItem.id > max){
+            return todoItem.id;
+        }
+        return max;
+    }, 0)
+    const todoItemNewIndex = largestId + 1;
+    const newtodoItem = JSON.parse(request.body as string) as TodoItem
+    // bovitsd a listat
+    todoList.push({
+        ...newtodoItem,
+        id: todoItemNewIndex
+    })
+    // csak az uj elemet add vissza
+    return todoList
+})
+
+fastify.delete('/todos/:id', async (request, reply) => {
+    const todoIndex = todoList.findIndex((todo) => {
+        const { id } = request.params as { id: number }
+        return todo.id == id
+    })
+    todoList.splice(todoIndex, 1)
+    return todoList
 })
 
 const start = async () => {
