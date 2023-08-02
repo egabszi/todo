@@ -22,6 +22,17 @@ const Container = () => {
       setTodoList(todoResponse as TodoItem[])
     })
   }, [])
+  
+  const handleChanges = () => {
+    fetch("http://localhost:3000/todos")
+    .then(async(response) => {
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+      const todoResponse = await response.json()
+      setTodoList(todoResponse as TodoItem[])
+    })
+  }
 
   const handleCheckbox = (index: number) => {
     const newCheckedItems = [...todoList];
@@ -37,6 +48,7 @@ const Container = () => {
       }
       newCheckedItems[index] = await response.json()
       setTodoList(newCheckedItems);
+      handleChanges()
     })
   };
 
@@ -48,7 +60,7 @@ const Container = () => {
       if(!response.ok) {
         throw new Error(response.statusText)
       }
-      newTodoList.splice(index, 1);
+      handleChanges();
       setTodoList(newTodoList);
     })
   };
@@ -59,8 +71,7 @@ const Container = () => {
   
   const handleAdd = () => {
     if (task) {
-      const newItem: TodoItem = {
-        id: null as unknown as number,
+      const newItem: Omit<TodoItem, "id"> = {
         title: task,
         isCompleted: false
       }
@@ -71,9 +82,9 @@ const Container = () => {
         if(!response.ok) {
           throw new Error(response.statusText)
         }
-        const updatedTodoList = await response.json();
-        setTodoList(updatedTodoList);
+        setTodoList([...todoList, newItem as TodoItem]);
         setTask("");
+        handleChanges()
       })
     } else {
       alert("Please enter a task");
