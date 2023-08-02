@@ -12,7 +12,11 @@ const fastify = (0, fastify_1.default)({
 });
 fastify.register(cors_1.default, {});
 fastify.get('/todos', async (request, reply) => {
-    return await prisma.todoItem.findMany();
+    return await prisma.todoItem.findMany({
+        orderBy: {
+            id: 'asc'
+        }
+    });
 });
 //POST METHOD HANDLES THE CHECKBOXES
 fastify.post('/todos/:id', async (request, reply) => {

@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"npx tsc --watch\" \"node --watch build/index.js\"",
-    "generate": "drizzle-kit generate:pg --out migrations-folder --schema src/db/schema.ts"
+    "dev": "concurrently \"npx tsc --watch\" \"node --watch build/index.js\""
   },
   "author": "",
   "license": "ISC",

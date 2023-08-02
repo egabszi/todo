@@ -1,7 +1,6 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import { PrismaClient } from "@prisma/client";
-import { todo } from 'node:test';
 
 const prisma = new PrismaClient();
 
@@ -14,7 +13,12 @@ fastify.register(cors, {
 })
 
 fastify.get('/todos', async (request, reply) => {
-    return await prisma.todoItem.findMany()
+    return await prisma.todoItem.findMany(
+        {
+            orderBy: {
+                id: 'asc'
+            }
+        });
 })
 
 //POST METHOD HANDLES THE CHECKBOXES

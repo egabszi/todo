@@ -12,16 +12,9 @@ const Container = () => {
   const [todoList, setTodoList] = useState([] as TodoItem[]);
   const [task, setTask] = useState("");
 
-  useEffect(() => {
-    fetch("http://localhost:3000/todos")
-    .then(async(response) => {
-      if (!response.ok) {
-        throw new Error(response.statusText)
-      }
-      const todoResponse = await response.json()
-      setTodoList(todoResponse as TodoItem[])
-    })
-  }, [])
+  useEffect(() =>
+    handleChanges(),
+     [])
   
   const handleChanges = () => {
     fetch("http://localhost:3000/todos")
@@ -46,8 +39,7 @@ const Container = () => {
       if(!response.ok) {
         throw new Error(response.statusText)
       }
-      newCheckedItems[index] = await response.json()
-      setTodoList(newCheckedItems);
+      newCheckedItems[index] = await response.json();
       handleChanges()
     })
   };
@@ -61,7 +53,6 @@ const Container = () => {
         throw new Error(response.statusText)
       }
       handleChanges();
-      setTodoList(newTodoList);
     })
   };
 
@@ -82,7 +73,6 @@ const Container = () => {
         if(!response.ok) {
           throw new Error(response.statusText)
         }
-        setTodoList([...todoList, newItem as TodoItem]);
         setTask("");
         handleChanges()
       })
