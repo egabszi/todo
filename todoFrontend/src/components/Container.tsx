@@ -12,7 +12,11 @@ const Container = () => {
   const [todoList, setTodoList] = useState([] as TodoItem[]);
   const [task, setTask] = useState("");
 
-  useEffect(() => {
+  useEffect(() =>
+    handleChanges(),
+     [])
+  
+  const handleChanges = () => {
     fetch("http://localhost:3000/todos")
     .then(async(response) => {
       if (!response.ok) {
@@ -21,7 +25,7 @@ const Container = () => {
       const todoResponse = await response.json()
       setTodoList(todoResponse as TodoItem[])
     })
-  }, [])
+  }
 
   const handleCheckbox = (index: number) => {
     const newCheckedItems = [...todoList];
@@ -35,8 +39,8 @@ const Container = () => {
       if(!response.ok) {
         throw new Error(response.statusText)
       }
-      newCheckedItems[index] = await response.json()
-      setTodoList(newCheckedItems);
+      newCheckedItems[index] = await response.json();
+      handleChanges()
     })
   };
 
@@ -48,8 +52,7 @@ const Container = () => {
       if(!response.ok) {
         throw new Error(response.statusText)
       }
-      newTodoList.splice(index, 1);
-      setTodoList(newTodoList);
+      handleChanges();
     })
   };
 
@@ -59,8 +62,7 @@ const Container = () => {
   
   const handleAdd = () => {
     if (task) {
-      const newItem: TodoItem = {
-        id: null as unknown as number,
+      const newItem: Omit<TodoItem, "id"> = {
         title: task,
         isCompleted: false
       }
@@ -71,9 +73,8 @@ const Container = () => {
         if(!response.ok) {
           throw new Error(response.statusText)
         }
-        const updatedTodoList = await response.json();
-        setTodoList(updatedTodoList);
         setTask("");
+        handleChanges()
       })
     } else {
       alert("Please enter a task");
