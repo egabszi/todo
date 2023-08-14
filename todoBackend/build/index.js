@@ -11,6 +11,7 @@ const fastify = (0, fastify_1.default)({
     logger: true
 });
 fastify.register(cors_1.default, {});
+<<<<<<< HEAD
 fastify.get('/todos', async (request, reply) => {
     return await prisma.todoItem.findMany({
         orderBy: {
@@ -45,6 +46,42 @@ fastify.delete('/todos/:id', async (request, reply) => {
     });
 });
 const start = async () => {
+=======
+fastify.get('/todos', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield prisma.todoItem.findMany({
+        orderBy: {
+            id: 'asc'
+        }
+    });
+}));
+//POST METHOD HANDLES THE CHECKBOXES
+fastify.post('/todos/:id', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    const itemId = parseInt(request.params.id);
+    return prisma.todoItem.update({
+        where: {
+            id: itemId
+        },
+        data: JSON.parse(request.body)
+    });
+}));
+//PUT METHOD ADDS A NEW TASK
+fastify.put('/todos', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    const newtodoItem = JSON.parse(request.body);
+    return prisma.todoItem.create({
+        data: newtodoItem
+    });
+}));
+//DELETE METHOD DELETES A TASK
+fastify.delete('/todos/:id', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    const itemId = parseInt(request.params.id);
+    return prisma.todoItem.delete({
+        where: {
+            id: itemId
+        }
+    });
+}));
+const start = () => __awaiter(void 0, void 0, void 0, function* () {
+>>>>>>> 6b6bc96 (changed style)
     try {
         await fastify.listen({ port: 3000 });
     }
