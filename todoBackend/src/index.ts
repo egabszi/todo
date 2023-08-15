@@ -1,8 +1,6 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { todo } from 'node:test'
 
 const fastify = Fastify({
     logger: true
@@ -13,41 +11,44 @@ fastify.register(cors, {
 })
 
 fastify.get('/todos', async (request, reply) => {
-    return await prisma.todoItem.findMany(
-        {
-            orderBy: {
-                id: 'asc'
-            }
-        });
+    return todoList
 })
 
-//POST METHOD HANDLES THE CHECKBOXES
 fastify.post('/todos/:id', async (request, reply) => {
-   const itemId = parseInt((request.params as { id: string }).id);
-   return prisma.todoItem.update({
-       where: {
-           id: itemId
-       },
-       data: JSON.parse(request.body as string)
-   })
+    const todoIndex = todoList.findIndex((todo) => {
+        const { id } = request.params as { id: number }
+        return todo.id == id
+    })
+    todoList[todoIndex] = JSON.parse(request.body as string) as TodoItem
+    return todoList[todoIndex]
 })
 
-//PUT METHOD ADDS A NEW TASK
 fastify.put('/todos', async (request, reply) => {
+    // itt generalj uj IDt
+    const largestId = todoList.reduce((max, todoItem) => {
+        if (todoItem.id > max){
+            return todoItem.id;
+        }
+        return max;
+    }, 0)
+    const todoItemNewIndex = largestId + 1;
     const newtodoItem = JSON.parse(request.body as string) as TodoItem
-    return prisma.todoItem.create({
-        data: newtodoItem
+    // bovitsd a listat
+    todoList.push({
+        ...newtodoItem,
+        id: todoItemNewIndex
     })
+    // csak az uj elemet add vissza
+    return todoList
 })
 
-//DELETE METHOD DELETES A TASK
 fastify.delete('/todos/:id', async (request, reply) => {
-    const itemId = parseInt((request.params as { id: string }).id);
-    return prisma.todoItem.delete({
-        where: {
-            id: itemId
-        }
+    const todoIndex = todoList.findIndex((todo) => {
+        const { id } = request.params as { id: number }
+        return todo.id == id
     })
+    todoList.splice(todoIndex, 1)
+    return todoList
 })
 
 const start = async () => {
